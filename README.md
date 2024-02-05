@@ -26,6 +26,8 @@ Example given:
 ![image](https://github.com/Piermaa/WhatsAppWeb-Sender/assets/87669776/811c0a73-a234-4efe-b31d-54028dbaafe0)
 
 
+Once you press: "Send" this message will be sent to every telephone number in the TEL column and the replacement values will be obtained from the same row of the telephone number.  
+
 
 # Software Requirements
 
