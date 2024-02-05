@@ -20,29 +20,29 @@ def start_script():
     else:
         message = message_entry.get()
 
-    if values_entry.get() == '':
-        print("Value null")
-        values_label.config(bootstyle="primary")
-    else:
-        values = values_entry.get()
+   # if values_entry.get() == '':
+   #     print("Value null")
+   #     values_label.config(bootstyle="primary")
+   # else:
+   #     values = values_entry.get()
 
-        try:
-            values = int(values)
-        except:
-            print("Value is not an integer")
-            values_label.config(bootstyle="warning")
+ #       try:
+ #           values = int(values)
+ #       except:
+ #           print("Value is not an integer")
+ #           values_label.config(bootstyle="warning")
 
 
 
-    if message is not None and values is not None:
-        send_messages(message, values)
+    if message is not None:
+        send_messages(message)
 
 
 
 # </editor-fold>
 root = create_window()
 create_window_label(root)
-message_label, values_label, message_entry, values_entry = create_entry_boxes(root)
+message_label, message_entry = create_entry_boxes(root)
 create_start_button(root).config(command=start_script)
 create_quit_button(root)
 

@@ -41,10 +41,5 @@ def create_entry_boxes(new_root):
     message_entry = tb.Entry(new_root, style="TEntry", width=100)  # Entry box constructor
     message_entry.pack()
 
-    values_label = tb.Label(new_root, text="Values in message:", font=("Helvetica", 10))
-    values_label.pack(pady=10)
 
-    values_entry = tb.Entry(new_root, width=2)  # Entry box constructor
-    values_entry.pack()
-
-    return message_label, values_label, message_entry, values_entry
+    return message_label,  message_entry
