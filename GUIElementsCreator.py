@@ -1,20 +1,13 @@
 from ttkbootstrap import *
 import ttkbootstrap as tb
+from tkinter import Tk, ttk, filedialog
 
+def create_button(new_root, button_text):
+    new_button = tb.Button(new_root, text=button_text, bootstyle="danger, outline")  # style
 
-def create_quit_button(new_root):
-    close_button = tb.Button(new_root,text="Close", bootstyle="danger, outline",
-                             command=new_root.quit)  # style
+    new_button.pack(padx=50, pady=5)
 
-    close_button.pack(padx=50, pady=10)
-
-
-def create_start_button(new_root):
-    begin_button = tb.Button(new_root, text="Start", bootstyle="danger, outline")  # style
-
-    begin_button.pack(padx=50, pady=20)
-
-    return begin_button
+    return new_button
 
 
 def create_window():
@@ -26,6 +19,16 @@ def create_window():
 
     return root
 
+
+
+def create_file_button(new_root):
+    file_entry = tb.Label(new_root, text="Select a file")
+    file_entry.pack(padx=10, pady=10)
+
+    select_button = ttk.Button(new_root, text="Select File")
+    select_button.pack(pady=10)
+
+    return file_entry, select_button
 
 def create_window_label(new_root):
     script_title = tb.Label(new_root,text="WhatsApp message sender", font=("Helvetica", 28),
@@ -42,4 +45,4 @@ def create_entry_boxes(new_root):
     message_entry.pack()
 
 
-    return message_label,  message_entry
+    return message_label, message_entry

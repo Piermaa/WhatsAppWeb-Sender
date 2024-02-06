@@ -1,3 +1,7 @@
+from PIL import Image
+import pyperclip
+import io
+
 import pandas as pd
 from selenium import webdriver
 from time import sleep
@@ -5,7 +9,33 @@ from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from ttkbootstrap import *
+import pyperclip
+import shutil
+import WhatsAppMessage
 
+def copy_to_clipboard(filepath):
+    try:
+        with open(filepath, 'rb') as image_file:
+            image_data = io.BytesIO(image_file.read())
+            img = Image.open(image_data)
+
+            # Convert the image to RGBA format (if not already in RGBA)
+            if img.mode != 'RGBA':
+                img = img.convert('RGBA')
+
+            # Convert the image to bytes
+            img_bytes = io.BytesIO()
+            img.save(img_bytes, format='PNG')
+            img_bytes.seek(0)
+
+            # Copy the image bytes to clipboard using pyperclip
+            pyperclip.copy(str(img_bytes.read()))
+
+            print(f"Image '{filepath}' copied to clipboard successfully.")
+    except FileNotFoundError:
+        print(f"Error: Image '{filepath}' not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def search_text_box_and_send(driver, xpath, text):
     text_box = None
@@ -29,7 +59,7 @@ def search_text_box_and_send(driver, xpath, text):
         return None
 
 
-def search_text_box_and_multi_send(driver, xpath, texts):
+def search_text_box_and_multi_send(driver, xpath, messages):
     text_box = None
     tries = 0
     while text_box is None and tries < 5:
@@ -40,11 +70,18 @@ def search_text_box_and_multi_send(driver, xpath, texts):
             tries += 1
 
     if tries < 5:
-        for text in texts:
+        for message in messages:
             text_box.clear()
-            text_box.send_keys(text)
+
+            if message.filepath != '':
+                copy_to_clipboard(message.filepath)
+                sleep(1)
+                text_box.send_keys(Keys.CONTROL, "v")
+                sleep(5)
+
+            text_box.send_keys(message.base_text)
             sleep(1)
-            a=input("Send message? ")
+            a = input("Send message? ")
             text_box.send_keys(Keys.ENTER)  # // LINE COMMENTED FOR TESTING     <-------------------------------------------
             sleep(1)
         sleep(5)
@@ -54,11 +91,11 @@ def search_text_box_and_multi_send(driver, xpath, texts):
         return None
 
 
-def send_message(telephone, driver, message):
+def send_message(telephone, driver, messages):
     try:
         search_text_box_and_send(driver, '//div[@contenteditable="true"][@data-tab="3"]', telephone)
-        # search_text_box_and_multi_send(webdriver, '//div[@contenteditable="true"][@title="Type a message"]', messages)
-        message_box = search_text_box_and_send(driver, '//div[@contenteditable="true"][@data-tab="10"]', message)
+
+        message_box = search_text_box_and_multi_send(driver, '//div[@contenteditable="true"][@data-tab="10"]', messages)
 
         if message_box is not None:
             message_box.send_keys(Keys.ESCAPE)
@@ -69,32 +106,32 @@ def send_message(telephone, driver, message):
         print(f"Error sending message to {telephone}: {str(e)}")
 
 
-def replace_values(base_message: str, row):
+def replace_values(base_messages, row):
+    for base_message in base_messages:
+        while '[' in base_message.base_text and ']' in base_message.base_text:
+            # Find the first occurrence of '[' and ']'
+            start_index = base_message.base_text.find('[')
+            end_index = base_message.base_text.find(']')
 
-    while '[' in base_message and ']' in base_message:
-        # Find the first occurrence of '[' and ']'
-        start_index = base_message.find('[')
-        end_index = base_message.find(']')
+            # Extract the substring within the square brackets
+            placeholder = base_message.base_text[start_index + 1:end_index]
 
-        # Extract the substring within the square brackets
-        placeholder = base_message[start_index + 1:end_index]
+            # Check if the placeholder is a column in the Excel file
+            if placeholder in row:
+                # Get the value from the Excel file
+                value = row[placeholder]
 
+                # Replace the placeholder in the message with the value
+                base_message.base_text = (base_message.base_text[:start_index] + str(value) +
+                                          base_message.base_text[end_index + 1:])
+            else:
+                print(f"Column '{placeholder}' not found in the Excel file.")
 
-        # Check if the placeholder is a column in the Excel file
-        if placeholder in row:
-            # Get the value from the Excel file
-            value = row[placeholder]
-
-            # Replace the placeholder in the message with the value
-            base_message = base_message[:start_index] + str(value) + base_message[end_index + 1:]
-        else:
-            print(f"Column '{placeholder}' not found in the Excel file.")
-
-    return base_message
+    return base_messages
 
 
-def send_messages(base_message):
-    filepath = "cn.xlsx"
+def send_messages(base_messages):
+    filepath = "cn.xls"
     df = pd.read_excel(filepath)
 
     sleep(2)
@@ -112,5 +149,5 @@ def send_messages(base_message):
 
         if not math.isnan(tel_value):
             tel_value = int(tel_value)
-            message = replace_values(base_message, row)
-            send_message(tel_value, web_driver, message)
+            messages = replace_values(base_messages, row)
+            send_message(tel_value, web_driver, messages)
