@@ -25,15 +25,21 @@ def add_message():
 def start_script():
     print("Starting script" + str(len(messages)))
     if len(messages) > 0:
-        send_messages(messages)
+        send_messages(messages, excel_filepath)
 
 
 def select_file():
     new_file_path = filedialog.askopenfilename(title="Select a file")
     if new_file_path:
-        file_label.config(text="File selected: " + str(new_file_path))
+        message_file_label.config(text="File selected: " + str(new_file_path))
         current_file.file_path = new_file_path
 
+def select_excel_file():
+    new_file_path = filedialog.askopenfilename(title="Select the .xls or .xlsx file")
+    if new_file_path:
+        excel_file_label.config(text="File selected: " + str(new_file_path))
+        global excel_filepath
+        excel_filepath = new_file_path
 # ===================================================================================
 
 #############
@@ -42,7 +48,7 @@ def select_file():
 
 messages = []
 current_file = MyFile("")
-
+excel_filepath = ""
 
 root = create_window()
 
@@ -51,12 +57,27 @@ root = create_window()
 #############
 
 create_window_label(root)
+# Create Excel file
+excel_file_label, excel_file_button = create_file_button(root, "Select .xls or .xlsx")
+
+ttk.Frame(root, width=10).pack(pady=20)
+
+# Message creation
 message_label, message_entry = create_entry_boxes(root)
-file_label, file_button = create_file_button(root)
-file_button.config(command=select_file)
-create_button(root,"Add").config(command=add_message)
-create_button(root,"Start").config(command=start_script)
-create_button(root,"Quit").config(command=root.quit)
+
+ttk.Frame(root, width=10).pack(pady=10)
+
+message_file_label, message_file_button = create_file_button(root, "Select file to attach")
+message_file_button.config(command=select_file)
+
+ttk.Frame(root, width=10).pack(pady=5)
+
+#Buttons creation
+
+ttk.Frame(root, width=10).pack(padx=108,side="left")
+create_button(root,"Add","left").config(command=add_message)
+create_button(root,"Start","left").config(command=start_script)
+create_button(root,"Quit","right").config(command=root.quit)
 
 
 root.mainloop()

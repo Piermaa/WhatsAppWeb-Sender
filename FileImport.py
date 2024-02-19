@@ -130,8 +130,8 @@ def replace_values(base_messages, row):
     return base_messages
 
 
-def send_messages(base_messages):
-    filepath = "cn.xls"
+def send_messages(base_messages, excel_filepath):
+    filepath = excel_filepath
     df = pd.read_excel(filepath)
 
     sleep(2)
