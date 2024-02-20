@@ -25,7 +25,7 @@ def add_message():
 def start_script():
     print("Starting script" + str(len(messages)))
     if len(messages) > 0:
-        send_messages(messages, excel_filepath)
+        send_messages(messages, excel_filepath, telephone_number_column_entry.get())
 
 
 def select_file():
@@ -58,26 +58,27 @@ root = create_window()
 
 create_window_label(root)
 # Create Excel file
-excel_file_label, excel_file_button = create_file_button(root, "Select .xls or .xlsx")
-
+excel_file_label, excel_file_button = create_file_button(root, "Select .xls or .xlsx", "top")
 ttk.Frame(root, width=10).pack(pady=20)
+telephone_number_column_label, telephone_number_column_entry = (
+    create_compact_entry_boxes(root, "Input telephone number column name:"))
 
 # Message creation
 message_label, message_entry = create_entry_boxes(root)
 
 ttk.Frame(root, width=10).pack(pady=10)
 
-message_file_label, message_file_button = create_file_button(root, "Select file to attach")
+message_file_label, message_file_button = create_file_button(root, "Select file to attach", "top")
 message_file_button.config(command=select_file)
 
 ttk.Frame(root, width=10).pack(pady=5)
 
 #Buttons creation
 
-ttk.Frame(root, width=10).pack(padx=108,side="left")
-create_button(root,"Add","left").config(command=add_message)
-create_button(root,"Start","left").config(command=start_script)
-create_button(root,"Quit","right").config(command=root.quit)
+ttk.Frame(root, width=10).pack(padx=108, side="left")
+create_button(root,"Add", "left").config(command=add_message)
+create_button(root,"Start", "left").config(command=start_script)
+create_button(root,"Quit", "right").config(command=root.quit)
 
 
 root.mainloop()

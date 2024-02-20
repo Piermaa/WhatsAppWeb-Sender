@@ -10,6 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from ttkbootstrap import *
 import pyperclip
+from MessageRedaction import *
 import shutil
 import WhatsAppMessage
 
@@ -106,31 +107,7 @@ def send_message(telephone, driver, messages):
         print(f"Error sending message to {telephone}: {str(e)}")
 
 
-def replace_values(base_messages, row):
-    for base_message in base_messages:
-        while '[' in base_message.base_text and ']' in base_message.base_text:
-            # Find the first occurrence of '[' and ']'
-            start_index = base_message.base_text.find('[')
-            end_index = base_message.base_text.find(']')
-
-            # Extract the substring within the square brackets
-            placeholder = base_message.base_text[start_index + 1:end_index]
-
-            # Check if the placeholder is a column in the Excel file
-            if placeholder in row:
-                # Get the value from the Excel file
-                value = row[placeholder]
-
-                # Replace the placeholder in the message with the value
-                base_message.base_text = (base_message.base_text[:start_index] + str(value) +
-                                          base_message.base_text[end_index + 1:])
-            else:
-                print(f"Column '{placeholder}' not found in the Excel file.")
-
-    return base_messages
-
-
-def send_messages(base_messages, excel_filepath):
+def send_messages(base_messages, excel_filepath, telephone_numbers_column):
     filepath = excel_filepath
     df = pd.read_excel(filepath)
 
@@ -143,9 +120,7 @@ def send_messages(base_messages, excel_filepath):
     sleep(30)
 
     for index, row in df.iterrows():
-        tel_value = row['TEL']
-     #   if tel_value == '' or tel_value == None:
-     #       continue
+        tel_value = row[telephone_numbers_column]
 
         if not math.isnan(tel_value):
             tel_value = int(tel_value)

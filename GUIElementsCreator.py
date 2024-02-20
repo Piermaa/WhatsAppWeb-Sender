@@ -21,12 +21,12 @@ def create_window():
 
 
 
-def create_file_button(new_root, label_text):
+def create_file_button(new_root, label_text, side):
     file_entry_label = tb.Label(new_root, text=label_text)
-    file_entry_label.pack(padx=10, pady=1)
+    file_entry_label.pack(padx=10, pady=1, side=side)
 
     select_button = ttk.Button(new_root, text="Select File")
-    select_button.pack(pady=1)
+    select_button.pack(pady=1, side=side)
 
     return file_entry_label, select_button
 
@@ -43,6 +43,16 @@ def create_entry_boxes(new_root):
 
     message_entry = tb.Entry(new_root, style="TEntry", width=100)  # Entry box constructor
     message_entry.pack()
+
+
+    return message_label, message_entry
+
+def create_compact_entry_boxes(new_root, label_text):
+    message_label = tb.Label(new_root, text=label_text, font=("Helvetica", 10))
+    message_label.pack(pady=1, side="left")
+
+    message_entry = tb.Entry(new_root, style="TEntry", width=20)  # Entry box constructor
+    message_entry.pack(side="left")
 
 
     return message_label, message_entry
