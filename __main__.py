@@ -17,6 +17,8 @@ def add_message():
     if message_entry.get() == '':
         message_label.config(bootstyle="warning")
         print("Message null")
+
+
     else:
         new_message = WhatsAppMessage.WhatsAppMessage(message_entry.get(), current_file.file_path)
         messages.append(new_message)
@@ -24,6 +26,18 @@ def add_message():
 
 def start_script():
     print("Starting script" + str(len(messages)))
+
+    if excel_filepath == '':
+        excel_file_label.config(bootstyle="warning")
+        print("Message null")
+        return
+
+
+    if telephone_number_column_entry.get() == '':
+        telephone_number_column_label.config(bootstyle="warning")
+        print("Message null")
+        return
+
     if len(messages) > 0:
         send_messages(messages, excel_filepath, telephone_number_column_entry.get())
 
@@ -59,23 +73,28 @@ root = create_window()
 create_window_label(root)
 # Create Excel file
 excel_file_label, excel_file_button = create_file_button(root, "Select .xls or .xlsx", "top")
-ttk.Frame(root, width=10).pack(pady=20)
+excel_file_button.config(command=select_excel_file)
+
+ttk.Frame(root, width=10).pack(pady=10) # ----------------------------------------------------------------------------
+
 telephone_number_column_label, telephone_number_column_entry = (
     create_compact_entry_boxes(root, "Input telephone number column name:"))
+
+ttk.Frame(root, width=10).pack(pady=10) # ----------------------------------------------------------------------------
 
 # Message creation
 message_label, message_entry = create_entry_boxes(root)
 
-ttk.Frame(root, width=10).pack(pady=10)
+ttk.Frame(root, width=10).pack(pady=10) # ----------------------------------------------------------------------------
 
 message_file_label, message_file_button = create_file_button(root, "Select file to attach", "top")
 message_file_button.config(command=select_file)
 
-ttk.Frame(root, width=10).pack(pady=5)
+ttk.Frame(root, width=10).pack(pady=5) # ----------------------------------------------------------------------------
 
 #Buttons creation
 
-ttk.Frame(root, width=10).pack(padx=108, side="left")
+ttk.Frame(root, width=10).pack(padx=108, side="left")  # --------------------------------------------------------------
 create_button(root,"Add", "left").config(command=add_message)
 create_button(root,"Start", "left").config(command=start_script)
 create_button(root,"Quit", "right").config(command=root.quit)
